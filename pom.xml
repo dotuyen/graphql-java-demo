@@ -23,6 +23,9 @@
         <h2.version>1.4.200</h2.version>
         <lombok.version>1.18.20</lombok.version>
         <java.version>11</java.version>
+        <jib-maven-plugin.version>3.2.0</jib-maven-plugin.version>
+        <jib-maven-plugin.image>eclipse-temurin:11-jre-focal</jib-maven-plugin.image>
+        <jib-maven-plugin.architecture>amd64</jib-maven-plugin.architecture>
     </properties>
     <dependencies>
         <dependency>
@@ -60,24 +63,24 @@
             <version>${graphql.spring.starter.version}</version>
             <scope>runtime</scope>
         </dependency>
-        <dependency> <!-- See http://localhost:8080/altair -->
-            <groupId>com.graphql-java-kickstart</groupId>
-            <artifactId>altair-spring-boot-starter</artifactId>
-            <version>${graphql.spring.starter.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency> <!-- See http://localhost:8080/playground -->
-            <groupId>com.graphql-java-kickstart</groupId>
-            <artifactId>playground-spring-boot-starter</artifactId>
-            <version>${graphql.spring.starter.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency> <!-- See http://localhost:8080/voyager -->
-            <groupId>com.graphql-java-kickstart</groupId>
-            <artifactId>voyager-spring-boot-starter</artifactId>
-            <version>${graphql.spring.starter.version}</version>
-            <scope>runtime</scope>
-        </dependency>
+<!--        <dependency> &lt;!&ndash; See http://localhost:8080/altair &ndash;&gt;-->
+<!--            <groupId>com.graphql-java-kickstart</groupId>-->
+<!--            <artifactId>altair-spring-boot-starter</artifactId>-->
+<!--            <version>${graphql.spring.starter.version}</version>-->
+<!--            <scope>runtime</scope>-->
+<!--        </dependency>-->
+<!--        <dependency> &lt;!&ndash; See http://localhost:8080/playground &ndash;&gt;-->
+<!--            <groupId>com.graphql-java-kickstart</groupId>-->
+<!--            <artifactId>playground-spring-boot-starter</artifactId>-->
+<!--            <version>${graphql.spring.starter.version}</version>-->
+<!--            <scope>runtime</scope>-->
+<!--        </dependency>-->
+<!--        <dependency> &lt;!&ndash; See http://localhost:8080/voyager &ndash;&gt;-->
+<!--            <groupId>com.graphql-java-kickstart</groupId>-->
+<!--            <artifactId>voyager-spring-boot-starter</artifactId>-->
+<!--            <version>${graphql.spring.starter.version}</version>-->
+<!--            <scope>runtime</scope>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>com.h2database</groupId>
@@ -111,103 +114,198 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>26.0-jre</version>
+            <version>31.1-jre</version>
         </dependency>
     </dependencies>
 
+<!--    <build>-->
+<!--        <pluginManagement>-->
+<!--            <plugins>-->
+<!--                <plugin>-->
+<!--                    <artifactId>maven-compiler-plugin</artifactId>-->
+<!--                    <configuration>-->
+<!--                        <release>${java.version}</release>-->
+<!--                        <annotationProcessorPaths>-->
+<!--                            <path>-->
+<!--                                <groupId>org.projectlombok</groupId>-->
+<!--                                <artifactId>lombok</artifactId>-->
+<!--                                <version>${lombok.version}</version>-->
+<!--                            </path>-->
+<!--                            <annotationProcessorPath> &lt;!&ndash; necessary to generate META-INF/spring-configuration-metadata.json &ndash;&gt;-->
+<!--                                <groupId>org.springframework.boot</groupId>-->
+<!--                                <artifactId>spring-boot-configuration-processor</artifactId>-->
+<!--                                <version>2.6.3</version>-->
+<!--                            </annotationProcessorPath>-->
+<!--                        </annotationProcessorPaths>-->
+<!--                    </configuration>-->
+<!--                </plugin>-->
+<!--            </plugins>-->
+<!--        </pluginManagement>-->
+<!--        <resources>-->
+<!--            <resource>-->
+<!--                <directory>src/main/resources</directory>-->
+<!--                <filtering>true</filtering>-->
+<!--            </resource>-->
+<!--        </resources>-->
+<!--        <plugins>-->
+<!--            <plugin>-->
+<!--                <groupId>org.springframework.boot</groupId>-->
+<!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
+<!--            </plugin>-->
+<!--            <plugin>-->
+<!--                <groupId>org.projectlombok</groupId>-->
+<!--                <artifactId>lombok-maven-plugin</artifactId>-->
+<!--                <version>${lombok.version}.0</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>generate-sources</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>delombok</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+<!--        </plugins>-->
+<!--    </build>-->
+
+<!--    <profiles>-->
+<!--        <profile>-->
+<!--            <id>jdk16</id>-->
+<!--            <activation>-->
+<!--                <jdk>16</jdk>-->
+<!--            </activation>-->
+<!--            <properties>-->
+<!--                <java.version>16</java.version>-->
+<!--            </properties>-->
+<!--            <build>-->
+<!--                <plugins>-->
+<!--                    <plugin>-->
+<!--                        <groupId>org.apache.maven.plugins</groupId>-->
+<!--                        <artifactId>maven-compiler-plugin</artifactId>-->
+<!--                        <configuration>-->
+<!--                            <release>${java.version}</release>-->
+<!--                            &lt;!&ndash; Below is needed to make lombok work with JDK16.  See https://github.com/rzwitserloot/lombok/issues/2681 &ndash;&gt;-->
+<!--                            <fork>true</fork>-->
+<!--                            <compilerArgs>-->
+<!--                                <arg>-J&#45;&#45;add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</arg>-->
+<!--                                <arg>-J&#45;&#45;add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED</arg>-->
+<!--                                <arg>-J&#45;&#45;add-opens=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED</arg>-->
+<!--                                <arg>-J&#45;&#45;add-opens=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED</arg>-->
+<!--                                <arg>-J&#45;&#45;add-opens=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED</arg>-->
+<!--                                <arg>-J&#45;&#45;add-opens=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED</arg>-->
+<!--                                <arg>-J&#45;&#45;add-opens=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED</arg>-->
+<!--                                <arg>-J&#45;&#45;add-opens=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</arg>-->
+<!--                                <arg>-J&#45;&#45;add-opens=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>-->
+<!--                                <arg>-J&#45;&#45;add-opens=jdk.compiler/com.sun.tools.javac.jvm=ALL-UNNAMED</arg>-->
+<!--                            </compilerArgs>-->
+<!--                        </configuration>-->
+<!--                    </plugin>-->
+<!--                </plugins>-->
+<!--            </build>-->
+<!--        </profile>-->
+<!--    </profiles>-->
+
+<!--    <repositories>-->
+<!--        <repository>-->
+<!--            <id>jcenter</id>-->
+<!--            <url>https://jcenter.bintray.com/</url>-->
+<!--        </repository>-->
+<!--    </repositories>-->
+
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <release>${java.version}</release>
-                        <annotationProcessorPaths>
-                            <path>
-                                <groupId>org.projectlombok</groupId>
-                                <artifactId>lombok</artifactId>
-                                <version>${lombok.version}</version>
-                            </path>
-                            <annotationProcessorPath> <!-- necessary to generate META-INF/spring-configuration-metadata.json -->
-                                <groupId>org.springframework.boot</groupId>
-                                <artifactId>spring-boot-configuration-processor</artifactId>
-                                <version>2.6.3</version>
-                            </annotationProcessorPath>
-                        </annotationProcessorPaths>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
+        <defaultGoal>spring-boot:run</defaultGoal>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok-maven-plugin</artifactId>
-                <version>${lombok.version}.0</version>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>delombok</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>${jib-maven-plugin.version}</version>
+                <configuration>
+                    <from>
+                        <image>${jib-maven-plugin.image}</image>
+                        <platforms>
+                            <platform>
+                                <architecture>${jib-maven-plugin.architecture}</architecture>
+                                <os>linux</os>
+                            </platform>
+                        </platforms>
+                    </from>
+                    <to>
+                        <image>graphql-demo:latest</image>
+                    </to>
+                    <container>
+                        <entrypoint>
+                            <shell>bash</shell>
+                            <option>-c</option>
+                            <arg>/entrypoint.sh</arg>
+                        </entrypoint>
+                        <ports>
+                            <port>8082</port>
+                        </ports>
+                        <environment>
+                            <SPRING_OUTPUT_ANSI_ENABLED>ALWAYS</SPRING_OUTPUT_ANSI_ENABLED>
+                            <JHIPSTER_SLEEP>0</JHIPSTER_SLEEP>
+                        </environment>
+                        <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
+                        <user>1000</user>
+                    </container>
+                    <extraDirectories>
+                        <paths>src/main/docker/jib</paths>
+                        <permissions>
+                            <permission>
+                                <file>/entrypoint.sh</file>
+                                <mode>755</mode>
+                            </permission>
+                        </permissions>
+                    </extraDirectories>
+                </configuration>
             </plugin>
         </plugins>
     </build>
-
     <profiles>
         <profile>
-            <id>jdk16</id>
+            <id>dev</id>
             <activation>
-                <jdk>16</jdk>
+                <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <java.version>16</java.version>
+                <war.name>dev</war.name>
             </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <configuration>
-                            <release>${java.version}</release>
-                            <!-- Below is needed to make lombok work with JDK16.  See https://github.com/rzwitserloot/lombok/issues/2681 -->
-                            <fork>true</fork>
-                            <compilerArgs>
-                                <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</arg>
-                                <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED</arg>
-                                <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED</arg>
-                                <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED</arg>
-                                <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED</arg>
-                                <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED</arg>
-                                <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED</arg>
-                                <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</arg>
-                                <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>
-                                <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.jvm=ALL-UNNAMED</arg>
-                            </compilerArgs>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <war.name>prod</war.name>
+            </properties>
         </profile>
     </profiles>
-
     <repositories>
         <repository>
-            <id>jcenter</id>
-            <url>https://jcenter.bintray.com/</url>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>https://repo.spring.io/milestone</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
     </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>https://repo.spring.io/milestone</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 
 
 </project>
